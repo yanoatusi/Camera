@@ -8,7 +8,15 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.ImageWriter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -22,7 +30,8 @@ public class MainActivity extends AppCompatActivity {
      * 保存された画像のURI。
      */
     private Uri _imageUri;
-
+    Bitmap beforeResizeBitmap;
+    Bitmap img;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -33,18 +42,23 @@ public class MainActivity extends AppCompatActivity {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         // カメラアプリとの連携からの戻りでかつ撮影成功の場合。
         if(requestCode == 200 && resultCode == RESULT_OK) {
-            // 画像を表示するImageViewを取得。
+                try {
+                   beforeResizeBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), _imageUri);
+
+                }catch (IOException e) {
+                    e.printStackTrace();
+                }
+        }
             ImageView ivCamera = findViewById(R.id.ivCamera);
             // フィールドの画像URIをImageViewに設定。
-            ivCamera.setImageURI(_imageUri);
-        }
+            ivCamera.setImageBitmap(img);
     }
     /**
      * 画像部分がタップされたときの処理メソッド。
      */
     public void onCameraImageClick(View view) {
         // WRITE_EXTERNAL_STORAGEの許可が下りていないなら…
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE
         ) != PackageManager.PERMISSION_GRANTED) {
             // WRITE_EXTERNAL_STORAGEの許可を求めるダイアログを表示。
             // その際、リクエストコードを2000に設定。
@@ -52,7 +66,6 @@ public class MainActivity extends AppCompatActivity {
             ActivityCompat.requestPermissions(this, permissions, 2000);
             return;
         }
-
         // 日時データを「yyyyMMddHHmmss」の形式に整形するフォーマッタを生成。
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
         // 現在の日時を取得。
@@ -61,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
         String nowStr = dateFormat.format(now);
         // ストレージに格納する画像のファイル名を生成。ファイル名の一意を確保するためにタイムスタンプ
         // の値を利用。
-        String fileName = "UseCameraActivityPhoto_" + nowStr + ".jpg";
+        String fileName = "UseCameraActivityPhoto_" + nowStr +".jpg";
         // ContentValuesオブジェクトを生成。
         ContentValues values = new ContentValues();
         // 画像ファイル名を設定。
@@ -78,16 +91,5 @@ public class MainActivity extends AppCompatActivity {
         intent.putExtra(MediaStore.EXTRA_OUTPUT, _imageUri);
         // アクティビティを起動。
         startActivityForResult(intent, 200);
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[]
-            grantResults) {
-        // WRITE_EXTERNAL_STORAGEに対するパーミッションダイアログでかつ許可を選択したなら…
-        if (requestCode == 2000 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // もう一度カメラアプリを起動。
-            ImageView ivCamera = findViewById(R.id.ivCamera);
-            onCameraImageClick(ivCamera);
-        }
     }
 }
