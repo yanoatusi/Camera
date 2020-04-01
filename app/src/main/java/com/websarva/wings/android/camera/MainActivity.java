@@ -66,7 +66,10 @@ public class MainActivity extends AppCompatActivity {
             ImageView ivCamera = findViewById(R.id.ivCamera);
             // フィールドの画像URIをImageViewに設定。
             ivCamera.setImageBitmap(afterResizeBitmap);
-            saveAsPngImage(beforeResizeBitmap,_imageUri.getPath());
+        //.jpgファイル作成
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        afterResizeBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
+        byte[] _bArray = bos.toByteArray();
     }
     static public boolean saveAsPngImage(Bitmap bmp, String strPath){
         try {
