@@ -11,6 +11,9 @@ import android.content.pm.PackageManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 
@@ -44,14 +47,41 @@ public class MainActivity extends AppCompatActivity {
         if(requestCode == 200 && resultCode == RESULT_OK) {
                 try {
                    beforeResizeBitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), _imageUri);
-
                 }catch (IOException e) {
                     e.printStackTrace();
                 }
         }
+        int width = beforeResizeBitmap.getWidth();    //. オリジナル画像の幅
+        int height = beforeResizeBitmap.getHeight();  //. オリジナル画像の高さ
+
+        int w = 800; //. 幅をこの数値に合わせて調整する
+
+        int new_height = w * height / width;
+        int new_width = w;
+        // リサイズ
+        Bitmap afterResizeBitmap = Bitmap.createScaledBitmap(beforeResizeBitmap,
+                (int) (new_width),
+                (int) (new_height),
+                true);
             ImageView ivCamera = findViewById(R.id.ivCamera);
             // フィールドの画像URIをImageViewに設定。
-            ivCamera.setImageBitmap(img);
+            ivCamera.setImageBitmap(afterResizeBitmap);
+            saveAsPngImage(beforeResizeBitmap,_imageUri.getPath());
+    }
+    static public boolean saveAsPngImage(Bitmap bmp, String strPath){
+        try {
+            File file = new File(strPath);
+            FileOutputStream outStream = new FileOutputStream(file);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+            outStream.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+            return false;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
     /**
      * 画像部分がタップされたときの処理メソッド。
