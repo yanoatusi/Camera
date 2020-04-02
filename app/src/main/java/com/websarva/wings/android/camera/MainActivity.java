@@ -12,6 +12,7 @@ import android.content.pm.PackageManager;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -22,6 +23,7 @@ import android.graphics.BitmapFactory;
 import android.media.ImageWriter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,12 +31,14 @@ import android.widget.ImageView;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
+
+
     /**
      * 保存された画像のURI。
      */
     private Uri _imageUri;
     Bitmap beforeResizeBitmap;
-    Bitmap img;
+    ImageView ivCamera = findViewById(R.id.ivCamera);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,19 +67,22 @@ public class MainActivity extends AppCompatActivity {
                 (int) (new_width),
                 (int) (new_height),
                 true);
-            ImageView ivCamera = findViewById(R.id.ivCamera);
+
             // フィールドの画像URIをImageViewに設定。
             ivCamera.setImageBitmap(afterResizeBitmap);
         //.jpgファイル作成
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        afterResizeBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
-        byte[] _bArray = bos.toByteArray();
+//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//        afterResizeBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
+//        byte[] _bArray = bos.toByteArray();
+        saveAsPngImage(afterResizeBitmap,_imageUri.getPath());
     }
+
+
     static public boolean saveAsPngImage(Bitmap bmp, String strPath){
         try {
             File file = new File(strPath);
             FileOutputStream outStream = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 80, outStream);
             outStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
