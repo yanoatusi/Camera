@@ -73,11 +73,12 @@ public class MainActivity extends AppCompatActivity {
         saveAsPngImage(afterResizeBitmap,_imageUri.getPath());
 
     }
+
     static public boolean saveAsPngImage(Bitmap bmp, String strPath){
         try {
             File file = new File(strPath);
             FileOutputStream outStream = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 100, outStream);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 80, outStream);
             outStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
