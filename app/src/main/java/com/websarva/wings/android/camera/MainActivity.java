@@ -22,7 +22,9 @@ import android.graphics.BitmapFactory;
 import android.media.ImageWriter;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -53,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
         }
         int width = beforeResizeBitmap.getWidth();    //. オリジナル画像の幅
         int height = beforeResizeBitmap.getHeight();  //. オリジナル画像の高さ
-
+        Log.d("debug", String.format("w= %d", width));
+        Log.d("debug", String.format("h= %d", height));
         int w = 800; //. 幅をこの数値に合わせて調整する
 
         int new_height = w * height / width;
@@ -67,16 +70,36 @@ public class MainActivity extends AppCompatActivity {
 //        ByteArrayOutputStream bos = new ByteArrayOutputStream();
 //        afterResizeBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
 //        byte[] _bArray = bos.toByteArray();
-        saveAsJpgImage(afterResizeBitmap,_imageUri.getPath());
+//        saveAsJpgImage(afterResizeBitmap,_imageUri.getPath());
+        try {
+            // sdcardフォルダを指定
+            File root = Environment.getExternalStorageDirectory();
+
+            // 日付でファイル名を作成　
+            Date mDate = new Date();
+            SimpleDateFormat fileName = new SimpleDateFormat("yyyyMMdd_HHmmss");
+
+            // 保存処理開始
+            FileOutputStream fos = null;
+            fos = new FileOutputStream(new File(root, fileName.format(mDate) + ".jpg"));
+
+            // jpegで保存
+            afterResizeBitmap.compress(Bitmap.CompressFormat.JPEG, 50, fos);
+
+            // 保存処理終了
+            fos.close();
+        } catch (Exception e) {
+            Log.e("Error", "" + e.toString());
+        }
         ImageView ivCamera = findViewById(R.id.ivCamera);
         // フィールドの画像URIをImageViewに設定。
-        ivCamera.setImageURI(_imageUri);
+        ivCamera.setImageBitmap(afterResizeBitmap);
     }
     static public boolean saveAsJpgImage(Bitmap bmp, String strPath){
         try {
             File file = new File(strPath);
             FileOutputStream outStream = new FileOutputStream(file);
-            bmp.compress(Bitmap.CompressFormat.JPEG, 80, outStream);
+            bmp.compress(Bitmap.CompressFormat.JPEG, 50, outStream);
             outStream.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
