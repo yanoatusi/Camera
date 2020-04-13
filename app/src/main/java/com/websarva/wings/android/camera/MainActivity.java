@@ -37,6 +37,8 @@ public class MainActivity extends AppCompatActivity {
     private Uri _imageUri;
     Bitmap beforeResizeBitmap;
     Bitmap img;
+    Date mDate;
+    SimpleDateFormat fileName;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,8 +78,8 @@ public class MainActivity extends AppCompatActivity {
             File root = Environment.getExternalStorageDirectory();
 
             // 日付でファイル名を作成　
-            Date mDate = new Date();
-            SimpleDateFormat fileName = new SimpleDateFormat("yyyyMMdd_HHmmss");
+            mDate = new Date();
+            fileName = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
             // 保存処理開始
             FileOutputStream fos = null;
@@ -93,7 +95,9 @@ public class MainActivity extends AppCompatActivity {
         }
         ImageView ivCamera = findViewById(R.id.ivCamera);
         // フィールドの画像URIをImageViewに設定。
-        ivCamera.setImageBitmap(afterResizeBitmap);
+                    //画像パスから表示
+            Bitmap bmImg = BitmapFactory.decodeFile((fileName.format(mDate) + ".jpg"));
+            ivCamera.setImageBitmap(bmImg);
     }
     static public boolean saveAsJpgImage(Bitmap bmp, String strPath){
         try {
