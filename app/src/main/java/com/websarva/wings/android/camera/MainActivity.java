@@ -96,7 +96,8 @@ public class MainActivity extends AppCompatActivity {
         ImageView ivCamera = findViewById(R.id.ivCamera);
         // フィールドの画像URIをImageViewに設定。
                     //画像パスから表示
-            Bitmap bmImg = BitmapFactory.decodeFile((fileName.format(mDate) + ".jpg"));
+            String filePath = Environment.getExternalStorageDirectory().getPath()+"/"+fileName.format(mDate) + ".jpg";
+            Bitmap bmImg = BitmapFactory.decodeFile(filePath);
             ivCamera.setImageBitmap(bmImg);
     }
     static public boolean saveAsJpgImage(Bitmap bmp, String strPath){
