@@ -68,11 +68,6 @@ public class MainActivity extends AppCompatActivity {
                 (int) (new_width),
                 (int) (new_height),
                 true);
-        //.jpgファイル作成
-//        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-//        afterResizeBitmap.compress(Bitmap.CompressFormat.JPEG, 50, bos);
-//        byte[] _bArray = bos.toByteArray();
-//        saveAsJpgImage(afterResizeBitmap,_imageUri.getPath());
         try {
             // sdcardフォルダを指定
             File root = Environment.getExternalStorageDirectory();
